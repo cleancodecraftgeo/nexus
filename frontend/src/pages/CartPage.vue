@@ -28,6 +28,6 @@ const cartStore = useCartStore();
    <hr>
    <p>Total Count: {{ cartStore.cartCount }}</p>
    <p>Total Price:{{cartStore.cartTotal}}</p>
-
+    <!-- <button type="button" @click="">Checkout</button> -->
   </div>
 </template>

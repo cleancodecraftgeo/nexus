@@ -4,6 +4,8 @@ import ProductsPage from "@/pages/ProductPage.vue";
 import ProductDetailsPage from "../pages/ProductDetailsPage.vue";
 import ProductsLayout from "../layouts/ProductsLayout.vue";
 import CartPage from "@/pages/CartPage.vue";
+
+import CheckoutPage from "@/pages/CheckoutPage.vue";
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
 
@@ -45,6 +47,12 @@ const router = createRouter({
   path:"/cart",
   name:"cart",
   component:CartPage
+},
+
+{
+  path:'/checkout',
+  name:"checkout",
+  component:CheckoutPage
 }
     ],
 });

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\OrderController;
 use App\Models\Product;
 use App\Models\User;
 use App\Notifications\ProductCreatedNotification;
@@ -87,4 +88,5 @@ Route::get('/yoxla', function():string{
 });
 
 
-Route::apiResource('products',ProductController::class);
+// Route::apiResource('products',ProductController::class);
+// Route::post('/orders', [OrderController::class, 'store']);

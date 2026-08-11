@@ -118,4 +118,9 @@ class ProductService
     {
         return $this->productRepo->paginate();
     }
+
+    public function findBySlug(string $slug): ?Product
+    {
+        return $this->productRepo->findBySlug($slug);
+    }
 }

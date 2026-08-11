@@ -24,5 +24,11 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         return $this->model->where('slug', $slug)->exists();
     }
 
+    public function findBySlug(string $slug): ?Product
+    {
+        return $this->model
+        ->where('slug',$slug)
+        ->first();
+    }
 
 }

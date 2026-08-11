@@ -47,10 +47,16 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $slug)
     {
-        //
-        return 'cavab '.$id;
+       $product = $this->productService->findBySlug($slug);
+
+       if(!$product)
+        {
+            abort(404);
+        }
+
+        return new ProductResource($product);
     }
 
     /**
