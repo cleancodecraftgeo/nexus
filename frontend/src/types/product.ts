@@ -1,8 +1,10 @@
 // types/product.ts
 export interface Product {
-  id: string        // ULID olduğu üçün string
-  name: string
-  price: string     // API-dən string gəlir "1199.00"
+  id: string
+  name: string;
+  price: string;
+  slug:string;
+  thumbnail:string;
 }
 
 export interface PaginationLink {

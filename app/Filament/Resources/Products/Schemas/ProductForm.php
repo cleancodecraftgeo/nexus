@@ -50,7 +50,7 @@ class ProductForm
                                             ->required()
                                             ->numeric()
                                             ->prefix('$'),
-                                        FileUpload::make('feautured_image')
+                                        FileUpload::make('thumbnail')
                                             ->image()
                                             ->directory('products')
                                             ->disk('public'),
