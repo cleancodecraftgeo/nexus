@@ -7,6 +7,7 @@ const cartStore = useCartStore();
 <template>
 
   <div>
+    <br>
     <h1>Cart</h1>
 
     <div
