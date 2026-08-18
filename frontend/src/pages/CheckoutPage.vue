@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import { useCartStore } from "@/stores/cart.store";
+import { useOrderStore } from "@/stores/order.store";
 import { createOrder } from "@/services/order.service";
+import { storageUrl } from "@/utils/images";
+import { useRouter } from "vue-router";
+import { ref } from "vue";
 
 const cartStore = useCartStore();
+const orderStore = useOrderStore();
 
-const order = ref<Order|null>(null);
 const orderError = ref<string | null>(null);
 const loading = ref(false);
+const router = useRouter();
 
 const placeOrder = async () => {
     loading.value = true;
@@ -21,102 +25,214 @@ const placeOrder = async () => {
             })),
         };
 
-        const response = await createOrder(payload);
+            const response = await createOrder(payload);
 
-        console.log("Created order:", response);
+    console.log("Order Created:", response);
 
-        order.value = response.order;
+    orderStore.setLastOrder(response.order);
 
-        // Order uğurla yaradıldıqdan sonra cart təmizlənir
-        cartStore.items = [];
+    cartStore.items = [];
+
+    router.push({
+        name: "order-success",
+        params: {
+            id: response.order.id,
+        },
+    });
+
     } catch (error) {
         console.error(error);
 
         orderError.value = "Order could not be created.";
     } finally {
         loading.value = false;
+
     }
 };
 
-interface OrderItem {
-    id: string;
-    order_id: string;
-    product_id: string;
-    quantity: number;
-    price: string;
-}
 
-interface Order {
-    id: string;
-    total: number;
-    status: string;
-    items: OrderItem[];
-}
 </script>
 
 <template>
-    <div>
-        <!-- SUCCESS -->
-        <div v-if="order">
-            <h1>Order Created Successfully! 🎉</h1>
+  <div class="min-h-screen bg-slate-50">
+    <div class="mx-auto max-w-7xl px-6 py-10">
 
-            <p>
-                Order ID: {{ order.id }}
-            </p>
 
-            <p>
-                Status: {{ order.status }}
-            </p>
 
-            <p>
-                Total:
-                ${{ Number(order.total).toFixed(2) }}
-            </p>
+      <!-- Header -->
+      <div class="mb-10">
+        <RouterLink to="/cart" class="text-sm text-slate-500 transition hover:text-slate-900">
+          ← Back to cart
+        </RouterLink>
+
+        <h1 class="mt-4 text-3xl font-bold text-slate-900">
+          Checkout
+        </h1>
+      </div>
+
+      <!-- Checkout layout -->
+      <div class="grid gap-10 lg:grid-cols-[1fr_420px]">
+
+        <!-- LEFT SIDE -->
+        <div class="space-y-8">
+
+          <!-- Contact -->
+          <section class="rounded-2xl border border-slate-200 bg-white p-6">
+            <h2 class="text-xl font-semibold text-slate-900">
+              Contact information
+            </h2>
+
+            <div class="mt-5">
+              <label for="email" class="mb-2 block text-sm font-medium text-slate-700">
+                Email
+              </label>
+
+              <input id="email" type="email" placeholder="you@example.com"
+                class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
+            </div>
+          </section>
+
+          <!-- Shipping -->
+          <section class="rounded-2xl border border-slate-200 bg-white p-6">
+            <h2 class="text-xl font-semibold text-slate-900">
+              Shipping information
+            </h2>
+
+            <div class="mt-5 grid gap-5 sm:grid-cols-2">
+
+              <div class="sm:col-span-2">
+                <label aria-label="Full name" class="mb-2 block text-sm font-medium text-slate-700">
+                  Full name
+                </label>
+
+                <input type="text" placeholder="John Doe"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">
+                  City
+                </label>
+
+                <input type="text" placeholder="Tbilisi"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">
+                  Country
+                </label>
+
+                <input type="text" placeholder="Georgia"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="mb-2 block text-sm font-medium text-slate-700">
+                  Address
+                </label>
+
+                <input type="text" placeholder="Street and house number"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
+              </div>
+
+            </div>
+          </section>
+
+          <!-- Payment -->
+          <section class="rounded-2xl border border-slate-200 bg-white p-6">
+            <h2 class="text-xl font-semibold text-slate-900">
+              Payment
+            </h2>
+
+            <div class="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <p class="text-sm font-medium text-slate-900">
+                Payment method
+              </p>
+
+              <p class="mt-1 text-sm text-slate-500">
+                Payment integration will be added soon.
+              </p>
+            </div>
+          </section>
+
         </div>
 
-        <!-- CHECKOUT -->
-        <div v-else>
-            <h1>Checkout</h1>
+        <!-- RIGHT SIDE -->
+        <aside class="h-fit rounded-2xl border border-slate-200 bg-white p-6 lg:sticky lg:top-6">
+          <h2 class="text-xl font-semibold text-slate-900">
+            Your Order
+          </h2>
 
-            <div
-                v-for="item in cartStore.items"
-                :key="item.product.id"
-            >
-                <p>
-                    {{ item.product.name }} × {{ item.quantity }}
+          <!-- Products -->
+          <div class="mt-6 space-y-5">
+
+            <div v-for="item in cartStore.items" :key="item.product.id" class="flex gap-4">
+              <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                <img v-if="item.product.thumbnail" :src="storageUrl(item.product.thumbnail)" :alt="item.product.name"
+                  class="h-full w-full object-contain" />
+
+                <span
+                  class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-slate-900 px-1 text-xs font-bold text-white">
+                  {{ item.quantity }}
+                </span>
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <h3 class="truncate text-sm font-medium text-slate-900">
+                  {{ item.product.name }}
+                </h3>
+
+                <p class="mt-1 text-sm text-slate-500">
+                  ${{ item.product.price }}
                 </p>
+              </div>
 
-                <p>
-                    ${{ (
-                        Number(item.product.price) * item.quantity
-                    ).toFixed(2) }}
-                </p>
-
-                <hr />
+              <p class="text-sm font-medium text-slate-900">
+                ${{ Number(item.product.price) * item.quantity }}
+              </p>
             </div>
 
-            <p>
-                Total items:
-                {{ cartStore.cartCount }}
-            </p>
+          </div>
 
-            <p>
-                Total:
-                ${{ cartStore.cartTotal.toFixed(2) }}
-            </p>
+          <!-- Summary -->
+          <div class="mt-6 border-t border-slate-200 pt-6">
 
-            <br />
+            <div class="flex justify-between text-sm text-slate-600">
+              <span>Items</span>
+              <span>{{ cartStore.cartCount }}</span>
+            </div>
 
-            <button type="button"
-                @click="placeOrder"
-                :disabled="loading || cartStore.items.length === 0"
-            >
-                {{ loading ? "Creating Order..." : "Place Order" }}
-            </button>
+            <div class="mt-3 flex justify-between text-sm text-slate-600">
+              <span>Subtotal</span>
+              <span>
+                ${{ cartStore.cartTotal }}
+              </span>
+            </div>
 
-            <p v-if="orderError">
-                {{ orderError }}
-            </p>
-        </div>
+            <div class="mt-4 flex justify-between border-t border-slate-200 pt-4 text-lg font-bold text-slate-900">
+              <span>Total</span>
+
+              <span>
+                ${{ cartStore.cartTotal }}
+              </span>
+            </div>
+
+          </div>
+
+          <!-- Place order -->
+          <button type="button" @click="placeOrder" :disabled="loading || cartStore.items.length === 0"
+            class="mt-6 w-full rounded-xl bg-slate-950 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50">
+            {{ loading ? "Creating Order..." : "Place Order" }}
+          </button>
+
+          <p v-if="orderError" class="mt-3 text-sm text-red-600">
+            {{ orderError }}
+          </p>
+
+        </aside>
+
+      </div>
     </div>
+  </div>
 </template>

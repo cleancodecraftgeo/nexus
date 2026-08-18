@@ -6,6 +6,8 @@ import ProductsLayout from "../layouts/ProductsLayout.vue";
 import CartPage from "@/pages/CartPage.vue";
 
 import CheckoutPage from "@/pages/CheckoutPage.vue";
+
+import OrderSuccessView from "@/pages/OrderSuccessView.vue";
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
 
@@ -24,6 +26,7 @@ const router = createRouter({
     meta: {
         breadcrumb: "Products",
     },
+
 
     children: [
         {
@@ -53,6 +56,12 @@ const router = createRouter({
   path:'/checkout',
   name:"checkout",
   component:CheckoutPage
+},
+
+{
+  path: "/order-success/:id",
+  name: "order-success",
+  component: OrderSuccessView,
 }
     ],
 });

@@ -1,3 +1,4 @@
+
 import type { Product } from "@/types/product";
 import { defineStore } from "pinia";
 
@@ -48,8 +49,7 @@ export const useCartStore = defineStore("cart",
       this.items.push({ product, quantity: 1 });
     }
 
-    console.log("Cart items:", this.items);      // ← bura
-    console.log("Cart count:", this.items.length);
+
         },
 
 
@@ -78,6 +78,10 @@ export const useCartStore = defineStore("cart",
           this.items = this.items.filter(
             item=>item.product.id !== productID
           );
+        },
+
+        clearCart():void{
+          this.items = [];
         }
       },
 

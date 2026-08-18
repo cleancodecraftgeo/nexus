@@ -33,7 +33,7 @@ console.log("vue-router : ",route.query)
 
 <template>
 
-  <header class="relative">
+  <header class="relative ">
     <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 bg-slate-950 text-amber-50
       rounded-lg">
       <!-- left side -->

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,10 +17,13 @@ class ProductResource extends JsonResource
     {
         return [
             'id'=>$this->id,
+            'brand'=>$this->brand?->name,
             'name'=>$this->name,
             'slug'=>$this->slug,
             'thumbnail'=>$this->thumbnail,
             'price'=>$this->price,
+            'description'=>$this->description,
+            'attributes'=>$this->attributes,
 
 
         ];

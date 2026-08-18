@@ -5,6 +5,9 @@ export interface Product {
   price: string;
   slug:string;
   thumbnail:string;
+  brand:string | null;
+  description: string|null;
+  attributes?:Attribute[]|null;
 }
 
 export interface PaginationLink {
@@ -34,4 +37,15 @@ export interface ProductResponse {
     next: string | null
   }
   meta: PaginationMeta
+}
+
+export interface AttributeValue {
+  id:string
+  value: string
+}
+
+export interface Attribute{
+   id:string
+  name:string;
+  values:AttributeValue[]
 }

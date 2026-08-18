@@ -7,7 +7,7 @@ import AppNavbar from './components/AppNavbar.vue';
 
 
 <template>
-  <AppNavbar />
+  <AppNavbar class=" sticky top-0 z-50"/>
 <main>
   <RouterView />
 </main>
