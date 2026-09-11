@@ -43,7 +43,7 @@ class OrderService
 
                     if ($item['quantity'] > $variant->stock) {
                         if ($variant->stock === 0) {
-                            throw new ConflictHttpException(409,"This product is out of stock.");
+                            throw new ConflictHttpException("This product is out of stock.");
                         }
 
                         throw new ConflictHttpException(
