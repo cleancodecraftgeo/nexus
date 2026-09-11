@@ -27,7 +27,6 @@ class ProductController extends Controller
         return ProductResource::collection(
             $this->productService->index()
         );
-
     }
 
     /**
@@ -40,21 +39,25 @@ class ProductController extends Controller
         );
 
         return (new ProductResource($product))
-        ->response()
-        ->setStatusCode(201);
+            ->response()
+            ->setStatusCode(201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $slug)
+    public function show(string $slug,)
     {
-       $product = $this->productService->findBySlug($slug);
+        $product = $this->productService->findBySlug($slug);
 
-       if(!$product)
-        {
+        if (!$product) {
             abort(404);
         }
+        // dd(
+        //     $product->variants
+        //         ->load('attributeValues')
+        //         ->toArray()
+        // );
 
         return new ProductResource($product);
     }

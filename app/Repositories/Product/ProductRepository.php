@@ -27,9 +27,12 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     public function findBySlug(string $slug): ?Product
     {
         return $this->model
-        ->with('attributes.values')
-        ->where('slug',$slug)
-        ->first();
+            ->with([
+                'attributes.values',
+                'variants.attributeValues',
+                'variants.attributeValues.attribute',
+            ])
+            ->where('slug', $slug)
+            ->first();
     }
-
 }
