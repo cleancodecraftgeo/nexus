@@ -12,6 +12,7 @@ use App\Repositories\Order\OrderRepository;
 use App\Repositories\Product\ProductRepository;
 use App\Services\CounterService;
 use App\Services\InventoryService;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -37,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Model::preventLazyLoading(! app()->isProduction());
         Product::observe(ProductObserver::class);
         Gate::policy(Product::class, ProductPolicy::class);
 
