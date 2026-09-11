@@ -5,7 +5,7 @@ import { createOrder } from "@/services/order.service";
 import { storageUrl } from "@/utils/images";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
-
+import axios from "axios";
 const cartStore = useCartStore();
 const orderStore = useOrderStore();
 
@@ -21,10 +21,13 @@ const placeOrder = async () => {
         const payload = {
             items: cartStore.items.map((item) => ({
                 product_id: item.product.id,
+                variant_id: item.variant.id,
                 quantity: item.quantity,
-            })),
-        };
 
+            })),
+
+        };
+console.log("ORDER PAYLOAD:", payload);
             const response = await createOrder(payload);
 
     console.log("Order Created:", response);
@@ -41,9 +44,15 @@ const placeOrder = async () => {
     });
 
     } catch (error) {
-        console.error(error);
+        // console.error("Full error ",error);
 
-        orderError.value = "Order could not be created.";
+        // orderError.value = "Order could not be created.";
+        if (axios.isAxiosError(error)) {
+    orderError.value =
+      error.response?.data?.message ?? "Order could not be created.";
+  } else {
+    orderError.value = "Order could not be created.";
+  }
     } finally {
         loading.value = false;
 
