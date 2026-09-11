@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreOrderRequest;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
 
@@ -24,9 +25,11 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreOrderRequest $request)
     {
-        $order =  $this->orderService->createOrder($request->all());
+        $order =  $this->orderService->createOrder(
+            $request->validated()
+        );
 
         return response()->json([
             'message'=>'order Created',
