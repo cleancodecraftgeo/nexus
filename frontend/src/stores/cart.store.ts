@@ -1,10 +1,13 @@
 
-import type { Product } from "@/types/product";
+
+
+import type { Product, ProductVariant } from "../types/Product";
 import { defineStore } from "pinia";
 
 
-interface CartItem<T> {
-    product: T
+interface CartItem {
+    product: Product
+    variant:ProductVariant
     quantity: number
 }
 
@@ -14,7 +17,7 @@ export const useCartStore = defineStore("cart",
 
 
     state: ()=>({
-      items: [] as CartItem<Product>[],
+      items: [] as CartItem[],
 
     }),
 
@@ -27,7 +30,7 @@ export const useCartStore = defineStore("cart",
 
           state.items.reduce((total, item)=>
 
-             total + Number(item.product.price) * item.quantity,0
+             total + Number(item.variant.price) * item.quantity,0
           )
 
 
@@ -37,16 +40,16 @@ export const useCartStore = defineStore("cart",
 
       actions:
       {
-        addToCart(product: Product)
+        addToCart(product: Product, variant: ProductVariant, quantity: number)
         {
           const existingItem = this.items.find(
-            item => item.product.id === product.id
+            item => item.variant.id === variant.id
           );
 
     if (existingItem) {
-      existingItem.quantity++;
+      existingItem.quantity+= quantity;
     } else {
-      this.items.push({ product, quantity: 1 });
+      this.items.push({ product,variant, quantity });
     }
 
 
@@ -54,29 +57,32 @@ export const useCartStore = defineStore("cart",
 
 
 
-        increaseQuantity(productID:string){
+        increaseQuantity(variantID:string){
             const item = this.items.find(
-              item=>item.product.id ===productID
+              item=>item.variant.id ===variantID
             );
-
-            if(item){
+            if (!item) return;
+            if(item.quantity<item.variant.stock){
               item.quantity++;
+            }
+            else{
+              console.warn('There are not enough products in stock ');
             }
         },
 
-        decreaseQuantity(productID:string){
+        decreaseQuantity(variantID:string){
 
           const item = this.items.find(
-            item=>item.product.id===productID
+            item=>item.variant.id===variantID
           );
           if(item&&item.quantity>1){
             item.quantity--
           }
         },
 
-        removeFromCart(productID:string){
+        removeFromCart(variantID:string){
           this.items = this.items.filter(
-            item=>item.product.id !== productID
+            item=>item.variant.id !== variantID
           );
         },
 

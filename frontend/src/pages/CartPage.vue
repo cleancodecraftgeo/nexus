@@ -49,20 +49,30 @@ const cartStore = useCartStore();
               </RouterLink>
 
               <p class="mt-1 text-center sm:text-start text-slate-500">
-                ${{ item.product.price }}
+                ${{ item.variant.price }}
               </p>
             </div>
 
             <div class="min-w-0 flex-1  0 py-2">
 
               <p class="text-sm text-center sm:text-start font-semibold text-slate-900 transition hover:text-slate-600">
-                Total Price {{ Number(item.product.price) * item.quantity }}
+                Total Price {{ Number(item.variant.price) * item.quantity }}
               </p>
+<div class="text-sm text-slate-500">
+  <span
+    v-for="value in item.variant.attributeValues"
+    :key="value.id"
+    class="flex"
+  >
+    {{ value.attribute }}: {{ value.value }}
+  </span>
+</div>
             </div>
+
 
             <!-- Quantity -->
             <div class="flex items-center rounded-lg  border-slate-200">
-              <button type="button" @click="cartStore.decreaseQuantity(item.product.id)" :disabled="item.quantity <= 1"
+              <button type="button" @click="cartStore.decreaseQuantity(item.variant.id)" :disabled="item.quantity <= 1"
                 :class="[
                   'px-3 py-2 transition',
                   item.quantity <= 1
@@ -76,14 +86,14 @@ const cartStore = useCartStore();
                 {{ item.quantity }}
               </span>
 
-              <button type="button" @click="cartStore.increaseQuantity(item.product.id)"
+              <button type="button" @click="cartStore.increaseQuantity(item.variant.id)"
                 class="px-3 py-2 text-slate-600 transition hover:bg-slate-100">
                 +
               </button>
             </div>
 
             <!-- Remove -->
-            <button type="button" @click="cartStore.removeFromCart(item.product.id)"
+            <button type="button" @click="cartStore.removeFromCart(item.variant.id)"
               class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700">
               Remove
             </button>
