@@ -8,6 +8,7 @@ export interface Product {
   brand:string | null;
   description: string|null;
   attributes?:Attribute[]|null;
+  variants?:ProductVariant[]|null
 }
 
 export interface PaginationLink {
@@ -47,5 +48,18 @@ export interface AttributeValue {
 export interface Attribute{
    id:string
   name:string;
-  values:AttributeValue[]
+  values:AttributeValue[];
+}
+
+export interface VariantAttributeValue {
+  id:string,
+  attribute:string;
+  value:string
+}
+
+export interface ProductVariant {
+  id:string;
+  price:string;
+  stock:number;
+  attributeValues:VariantAttributeValue[]
 }
