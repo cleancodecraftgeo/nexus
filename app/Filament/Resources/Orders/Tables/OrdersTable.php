@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use App\Enums\OrderStatus;
 
 class OrdersTable
 {
@@ -15,14 +16,15 @@ class OrdersTable
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('Order ID')
-                    ->searchable()
-                    ->copyable(),
+                // TextColumn::make('id')
+                //     ->label('Order ID')
+                //     ->searchable()
+                //     ->copyable(),
 
                 TextColumn::make('status')
                     ->badge()
-                    ->sortable(),
+                    ->formatStateUsing(fn(OrderStatus $state) => $state->label())
+                    ->color(fn(OrderStatus $state) => $state->color()),
 
                 TextColumn::make('total')
                     ->money('USD')

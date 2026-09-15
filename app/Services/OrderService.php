@@ -2,12 +2,15 @@
 
 namespace App\Services;
 
+use App\Enums\OrderStatus;
+use App\Exceptions\InsufficientStockException;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use App\Models\ProductVariant;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use App\Exceptions\OutOfStockException;
 class OrderService
 {
     function __construct(private OrderRepositoryInterface $orderRepo) {}
@@ -43,12 +46,12 @@ class OrderService
 
                     if ($item['quantity'] > $variant->stock) {
                         if ($variant->stock === 0) {
-                            throw new ConflictHttpException("This product is out of stock.");
+                            throw new OutOfStockException;
                         }
 
-                        throw new ConflictHttpException(
-
-                            "Insufficient stock. Requested: {$item['quantity']}, Available: {$variant->stock}."
+                        throw new InsufficientStockException(
+                             $item['quantity'],
+                            $variant->stock
                         );
                     }
 
@@ -62,7 +65,7 @@ class OrderService
 
                 $order = $this->orderRepo->create([
                     'total' => $total,
-                    'status' => 'pending'
+                    'status' => OrderStatus::Pending->value,
                 ]);
 
                 // OrderItems block
