@@ -7,8 +7,12 @@ import AppNavbar from './components/AppNavbar.vue';
 
 
 <template>
+
+
   <AppNavbar class=" sticky top-0 z-50"/>
-<main>
+  <vue3-snackbar top  right :duration="4000" />
+  <main>
   <RouterView />
 </main>
 </template>
+

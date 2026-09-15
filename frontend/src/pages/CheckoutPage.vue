@@ -6,9 +6,10 @@ import { storageUrl } from "@/utils/images";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import axios from "axios";
+import { useNotify } from "@/composables/useNotify";
 const cartStore = useCartStore();
 const orderStore = useOrderStore();
-
+const notify = useNotify();
 const orderError = ref<string | null>(null);
 const loading = ref(false);
 const router = useRouter();
@@ -27,14 +28,15 @@ const placeOrder = async () => {
             })),
 
         };
-console.log("ORDER PAYLOAD:", payload);
+
             const response = await createOrder(payload);
 
-    console.log("Order Created:", response);
+
 
     orderStore.setLastOrder(response.order);
-
     cartStore.items = [];
+
+
 
     router.push({
         name: "order-success",
@@ -44,21 +46,41 @@ console.log("ORDER PAYLOAD:", payload);
     });
 
     } catch (error) {
-        // console.error("Full error ",error);
+    if (axios.isAxiosError(error)) {
+        const data = error.response?.data;
+        console.log("BACKEND ERROR DATA:", data);
+        console.log(data);
 
-        // orderError.value = "Order could not be created.";
-        if (axios.isAxiosError(error)) {
-    orderError.value =
-      error.response?.data?.message ?? "Order could not be created.";
-  } else {
-    orderError.value = "Order could not be created.";
-  }
-    } finally {
-        loading.value = false;
+        if (data?.code === "INSUFFICIENT_STOCK") {
+            const message = `Only ${data.details.available} item(s) are available in stock.`;
+            orderError.value = message;
+            notify.warning(message);
+            return;
+        }
+        if (data?.code === "OUT_OF_STOCK") {
+    const message = "This product is currently out of stock.";
 
+    orderError.value = message;
+    notify.error(message);
+
+    return;
+}
+
+        const message = data?.message ?? "Order could not be created.";
+        orderError.value = message;
+        notify.error(message);
+        return;
     }
-};
 
+    const message = "Order could not be created.";
+    orderError.value = message;
+    notify.error(message);
+
+
+} finally {
+    loading.value = false;
+}
+}
 
 </script>
 
@@ -176,7 +198,7 @@ console.log("ORDER PAYLOAD:", payload);
           <!-- Products -->
           <div class="mt-6 space-y-5">
 
-            <div v-for="item in cartStore.items" :key="item.product.id" class="flex gap-4">
+            <div v-for="item in cartStore.items" :key="item.variant.id" class="flex gap-4">
               <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-slate-100">
                 <img v-if="item.product.thumbnail" :src="storageUrl(item.product.thumbnail)" :alt="item.product.name"
                   class="h-full w-full object-contain" />
@@ -193,12 +215,12 @@ console.log("ORDER PAYLOAD:", payload);
                 </h3>
 
                 <p class="mt-1 text-sm text-slate-500">
-                  ${{ item.product.price }}
+                  ${{ item.variant.price }}
                 </p>
               </div>
 
               <p class="text-sm font-medium text-slate-900">
-                ${{ Number(item.product.price) * item.quantity }}
+                ${{ Number(item.variant.price) * item.quantity }}
               </p>
             </div>
 
