@@ -6,6 +6,8 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use App\Exceptions\OutOfStockException;
+use Illuminate\Auth\AuthenticationException;
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -14,7 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+          $middleware->redirectGuestsTo(function (Request $request) {
+        if ($request->is('api/*')) {
+            return null;
+        }
+
+        return route('login');
+    });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(
@@ -38,4 +46,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 'details'=>null,
             ],409);
         });
+
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Unauthenticated.',
+                ], 401);
+            }
+        });
     })->create();
+
