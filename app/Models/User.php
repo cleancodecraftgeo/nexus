@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Override;
@@ -54,7 +55,7 @@ class User extends Authenticatable implements FilamentUser
         ],true);
     }
 
-    
+
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->canAccessAdminPanel();
@@ -69,4 +70,8 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
+    public function orders():HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
 }

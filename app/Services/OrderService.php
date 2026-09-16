@@ -15,7 +15,7 @@ class OrderService
 {
     function __construct(private OrderRepositoryInterface $orderRepo) {}
 
-    public function createOrder(array $data): Order
+    public function createOrder(array $data, ?int $userId = null): Order
     {
         $normalizedItems = collect($data['items'])
             ->groupBy('variant_id')
@@ -30,7 +30,8 @@ class OrderService
 
 
         return DB::transaction(
-            function () use ($normalizedItems) {
+            function () use ($normalizedItems, $userId) {
+                $user_id = $userId;
                 $total = 0;
                 $resolvedItems = [];
 
