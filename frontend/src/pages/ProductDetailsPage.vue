@@ -6,7 +6,19 @@ import { storageUrl } from '@/utils/images';
 import { useCartStore } from '@/stores/cart.store';
 import {   computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { api } from '@/services/api'
 
+async function testOrder() {
+  try {
+    const response = await api.get(
+      '/orders/01m2p2h60vxjwn7n8gepwyr33x'
+    )
+
+    console.log('ORDER:', response.data)
+  } catch (error) {
+    console.log('ORDER ERROR:', error)
+  }
+}
 interface SelectedValues {
     [key: string]: string;
 }
@@ -192,7 +204,13 @@ console.log(product);
     </div>
 
     <!-- recomended products -->
-    <div></div>
+    <div><button
+  type="button"
+  @click="testOrder"
+  class="border px-4 py-2"
+>
+  Test Order Policy
+</button></div>
   </div>
 </template>
 <style scoped>

@@ -11,7 +11,8 @@ const productStore = useProductStore();
   onMounted(async()=>{
 
     await productStore.fetchProducts();
-    // console.log(productStore.products,'bu datalar productStoredan gelir');
+    
+
   });
 </script>
 
@@ -20,8 +21,11 @@ const productStore = useProductStore();
   <div>
     <h2>Home Page</h2>
     <Breadcrumbs />
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-4 gap-6 mt-2">
 
-    <ProductCard v-for="product in productStore.products" :key="product.id" :product="product" />
+  <ProductCard v-for="product in productStore.products" :key="product.id" :product="product" />
+
+</div>
 
   </div>
 </template>

@@ -35,4 +35,15 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             ->where('slug', $slug)
             ->first();
     }
+
+    public function paginate(int $perPage = 20): LengthAwarePaginator
+    {
+        return $this->applyCriteria()
+            ->with([
+                'brand',
+                'attributes.values',
+                'variants.attributeValues.attribute',
+            ])
+            ->paginate($perPage);
+    }
 }
