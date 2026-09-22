@@ -26,11 +26,14 @@ class OrderPolicy
      */
     public function view(User $user, Order $order): bool
     {
-        return in_array($user->role,[
-            UserRole::SuperAdmin,
+        if(in_array($user->role,[
+            UserRole::Manager,
             UserRole::Admin,
-            UserRole::Manager
-        ],true);
+            UserRole::SuperAdmin,
+        ], true)){
+            return true;
+        }
+    return $order->user_id ===$user->id;
     }
 
     /**

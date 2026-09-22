@@ -17,3 +17,12 @@ export const createOrder = async (data: CreateOrderPayload)=>
 
   return response.data;
 }
+
+export const orderService = {
+  myOrders(){
+    return api.get('/my-orders')
+  },
+  getOrder(id:string){
+    return api.get(`/orders/${id}`)
+  },
+}

@@ -65,6 +65,7 @@ class OrderService
                 }
 
                 $order = $this->orderRepo->create([
+                    'user_id'=>$userId,
                     'total' => $total,
                     'status' => OrderStatus::Pending->value,
                 ]);
@@ -86,5 +87,8 @@ class OrderService
                 return $order->load('items');
             }
         );
+    }
+    public function getUserOrders(int $userId){
+        return $this->orderRepo->getByUserId($userId);
     }
 }
