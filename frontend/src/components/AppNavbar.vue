@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { useCartStore } from '@/stores/cart.store';
-import { useRoute } from 'vue-router';
-import {Heart, Menu, ShoppingCart, User} from "lucide-vue-next"
+import { RouterLink,   useRouter } from 'vue-router';
+import {Heart, Menu,  ShoppingCart, User} from "lucide-vue-next"
 import { ref } from 'vue';
 import MobileMenu from './Navbar/MobileMenu.vue';
+import { useAuthStore } from '@/stores/auth.store';
 
 
 
 const cartStore = useCartStore();
 const isMenuOpen = ref<boolean>(false);
+const authStore = useAuthStore()
+const router = useRouter()
 
 const navbarLinks = [
   {label: 'Home', path: '/'},
@@ -19,15 +22,19 @@ const navbarLinks = [
 
 const toggleMenu = ():void=>{
     isMenuOpen.value=!isMenuOpen.value
-    console.log("toggle menu ",isMenuOpen.value);
+
 }
 
-const route = useRoute()
+async function logout(){
+  await authStore.logout()
 
-console.log("vue-router : ",route.path)      // → "/products"
-console.log("vue-router : ",route.name)      // → "products"
-console.log("vue-router : ",route.params)    // → { slug: "macbook" }
-console.log("vue-router : ",route.query)
+  router.push('/login')
+}
+
+// console.log("vue-router : ",route.path)      // → "/products"
+// console.log("vue-router : ",route.name)      // → "products"
+// console.log("vue-router : ",route.params)    // → { slug: "macbook" }
+// console.log("vue-router : ",route.query)
 
 </script>
 
@@ -70,6 +77,24 @@ console.log("vue-router : ",route.query)
           <User :size="20" class="cursor-pointer text-slate-300 transition hover:text-white" />
         </RouterLink>
 
+        <div class="flex items-center gap-4">
+          <template v-if="!authStore.isAuthenticated">
+            <RouterLink to="/login" class="hover:opacity-70">
+                Login
+              </RouterLink>
+
+            <RouterLink to="/register" class="hover:opacity-70">
+              Register
+            </RouterLink>
+
+          </template>
+
+          <template v-else>
+                  <span>{{authStore.user?.name}}</span>
+                  <button type="button" @click="logout" class="hover:opacity-70">Logout</button>
+          </template>
+
+        </div>
 
       </div>
       <!-- right side ends-->

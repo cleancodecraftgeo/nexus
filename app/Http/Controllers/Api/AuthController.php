@@ -63,27 +63,27 @@ class AuthController extends Controller
     }
 
     /**
-     * Cari istifadəçi məlumatı
+     * current user info
      */
     public function user(Request $request)
     {
         return response()->json([
-            'User'=>$request->user(),
+            'user'=>$request->user(),
         ]);
     }
 
      /**
-     * İstifadəçi çıxışı
+     * logout
      */
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return response()->json([
-            "Message" =>"logout successfully"
+            "message" =>"logout successfully"
         ]);
     }
 }

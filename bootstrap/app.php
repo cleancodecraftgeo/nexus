@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         return route('login');
     });
+    $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(
