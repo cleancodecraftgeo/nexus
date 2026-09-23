@@ -11,6 +11,7 @@ import RegisterPage from "@/pages/Auth/RegisterPage.vue";
 import OrderHistoryPage from "@/pages/OrderHistoryPage.vue";
 import OrderDetailsPage from "@/pages/OrderDetailsPage.vue";
 import { useAuthStore } from "@/stores/auth.store.ts";
+import ProfilePage from "@/pages/ProfilePage.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +31,14 @@ const router = createRouter({
           path:"/register",
           name:'register',
           component:RegisterPage
+        },
+        {
+            path:'/profile',
+            name:'profile',
+            component:ProfilePage,
+            meta:{
+              requiresAuth:true,
+            }
         },
 
 
@@ -105,7 +114,7 @@ router.beforeEach(async (to)=>{
   if(!AuthStore.authInitialized){
     await AuthStore.fetchUser()
   }
-  if(to.meta.requiredAuth && !AuthStore.isAuthenticated){
+  if(to.meta.requiresAuth && !AuthStore.isAuthenticated){
     return '/login'
   }
 })

@@ -9,7 +9,7 @@ export const api = axios.create({
 })
 
 export const backendApi  = axios.create({
-  baseURL: `${backendUrl}/api`,
+  baseURL: backendUrl,
   withCredentials: true,
   withXSRFToken: true,
 })

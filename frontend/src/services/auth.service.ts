@@ -33,4 +33,10 @@ export const authService = {
   user() {
     return api.get("/user")
   },
+  updateProfile(name:string, email:string){
+    return api.put('/profile',{
+      name,
+      email,
+    })
+  }
 }
