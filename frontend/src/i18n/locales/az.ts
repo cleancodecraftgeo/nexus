@@ -1,0 +1,41 @@
+export default {
+  nav:{
+    home: 'Ana səhifə',
+    category: 'Kateqoriya',
+    collection: 'Kolleksiya',
+    contact: 'Bizimlə əlaqə',
+    login: 'Daxil ol',
+    register: 'Qeydiyyat',
+    logout: 'Çıxış',
+  },
+  common:{
+    save: 'Saxla',
+    cancel: 'Ləğv et',
+    edit: 'Redaktə et',
+    delete: 'Sil',
+    viewDetails: 'Ətraflı bax',
+    addToCart: 'Səbətə əlavə et',
+    checkout: 'Sifariş ver',
+    continueShopping: 'Alışverişə davam et',
+    loading: 'Yüklənir...',
+    back: 'Geri',
+},
+
+profile:{
+    title: 'Mənim hesabım',
+    name: 'Ad',
+    surname: 'Soyad',
+    email: 'E-poçt',
+    phone: 'Telefon',
+    role: 'Rol',
+    editProfile: 'Profili redaktə et',
+    changePassword: 'Şifrəni dəyiş',
+    currentPassword: 'Cari şifrə',
+    newPassword: 'Yeni şifrə',
+    confirmPassword: 'Şifrəni təsdiqlə',
+    profileUpdated: 'Profil uğurla yeniləndi',
+    passwordUpdated: 'Şifrə uğurla yeniləndi',
+    passwordMismatch: 'Şifrələr uyğun gəlmir',
+    updateFailed: 'Yeniləmə alınmadı',
+}
+}

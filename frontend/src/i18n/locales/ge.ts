@@ -1,0 +1,41 @@
+export default {
+  nav:{
+    home: 'მთავარი',
+    category: 'კატეგორია',
+    collection: 'კოლექცია',
+    contact: 'დაგვიკავშირდით',
+    login: 'შესვლა',
+    register: 'რეგისტრაცია',
+    logout: 'გასვლა',
+  },
+  common:{
+    save: 'შენახვა',
+    cancel: 'გაუქმება',
+    edit: 'რედაქტირება',
+    delete: 'წაშლა',
+    viewDetails: 'დეტალების ნახვა',
+    addToCart: 'კალათაში დამატება',
+    checkout: 'შეკვეთის გაფორმება',
+    continueShopping: 'შოპინგის გაგრძელება',
+    loading: 'იტვირთება...',
+    back: 'უკან',
+},
+
+profile:{
+    title: 'ჩემი ანგარიში',
+    name: 'სახელი',
+    surname: 'გვარი',
+    email: 'ელ. ფოსტა',
+    phone: 'ტელეფონი',
+    role: 'როლი',
+    editProfile: 'პროფილის რედაქტირება',
+    changePassword: 'პაროლის შეცვლა',
+    currentPassword: 'მიმდინარე პაროლი',
+    newPassword: 'ახალი პაროლი',
+    confirmPassword: 'პაროლის დადასტურება',
+    profileUpdated: 'პროფილი წარმატებით განახლდა',
+    passwordUpdated: 'პაროლი წარმატებით განახლდა',
+    passwordMismatch: 'პაროლები არ ემთხვევა',
+    updateFailed: 'განახლება ვერ მოხერხდა',
+}
+}
