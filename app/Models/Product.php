@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Attribute;
 use App\Models\ProductVariant;
+use App\Models\ProductTranslation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -76,6 +77,11 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
+    public function translations(): HasMany
+    {
+        return $this->hasMany(ProductTranslation::class);
+    }
+
     public function getTotalStockAttribute():int
     {
         return $this->variants->sum('stock');
@@ -97,4 +103,5 @@ class Product extends Model
             $query->where('stock','>',0);
         });
     }
+
 }

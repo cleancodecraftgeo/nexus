@@ -6,33 +6,12 @@ use App\Contracts\InventoryServiceInterface;
 use App\Events\ProductCreated;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Repositories\Contracts\BaseRepositoryInterface;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ProductService
 {
-    //    public function create(array $data): Product
-    // {
-    //     return DB::transaction(function () use ($data) {
-
-    //         $product = Product::create($data);
-
-    //         throw new \Exception('Test Transaction');
-
-    //         ProductVariant::create([
-    //             'product_id' => $product->id,
-    //             'sku' => $product->sku,
-    //             'price' => $product->price,
-    //             'stock' => 0,
-    //             'is_active' => true,
-    //             'is_default' => true,
-    //         ]);
-
-    //         return $product;
-    //     });
-    // }
 
     public function __construct(
         private ProductRepositoryInterface $productRepo,
@@ -45,18 +24,55 @@ class ProductService
     }
 
 
-    public function create(array $data): Product
+    public function create(array $data, array $translations = []): Product
     {
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data, $translations) {
 
 
             $product = $this->createProduct($data);
 
             $this->createDefaultVariant($product);
 
-            ProductCreated::dispatch($product);
+            foreach ($translations as $locale => $translation) {
+                if (blank($translation['name'] ?? null)) {
+                    continue;
+                }
 
+                $product->translations()->create([
+                    'locale' => $locale,
+                    'name' => $translation['name'],
+                    'description' => $translation['description'] ?? null,
+                ]);
+            }
+            ProductCreated::dispatch($product);
             return $product;
+        });
+    }
+
+    public function update(
+        Product $product,
+        array $data,
+        array $translations = [],
+    ): Product {
+        return DB::transaction(function () use ($product, $data, $translations) {
+            $product->update($data);
+
+            foreach ($translations as $locale => $translation) {
+                if (blank($translation['name'] ?? null)) {
+                    continue;
+                }
+
+                $product->translations()->updateOrCreate(
+                    [
+                        'locale' => $locale,
+                    ],
+                    [
+                        'name' => $translation['name'],
+                        'description' => $translation['description'] ?? null,
+                    ]
+                );
+            }
+            return $product->fresh();
         });
     }
 
@@ -79,12 +95,11 @@ class ProductService
         $original = $slug;
         $count = 2;
 
-        while ($this->productRepo->slugExists($slug))
-            {
-                $slug = $original . '-' . $count;
-                $count++;
-            }
-            return $slug;
+        while ($this->productRepo->slugExists($slug)) {
+            $slug = $original . '-' . $count;
+            $count++;
+        }
+        return $slug;
     }
 
 
@@ -110,9 +125,11 @@ class ProductService
             'price' => $product->price,
             'stock' => 0,
             'is_active' => true,
-            'is_featured' => true,
+            'is_default' => true,
         ]);
     }
+
+
 
     public function index(): \Illuminate\Pagination\LengthAwarePaginator
     {

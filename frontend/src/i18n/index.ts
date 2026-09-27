@@ -13,7 +13,7 @@ export const i18n = createI18n({
   messages:{
     en,
     ru,
-    ge,
+    ka: ge,
     az,
   }
 })

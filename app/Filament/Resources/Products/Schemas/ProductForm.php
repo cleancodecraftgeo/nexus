@@ -135,8 +135,45 @@ class ProductForm
                                     ->searchable()
                                     ->preload()
                             ]),
-                    ])
-                    ->persistTabInQueryString(),
+Tab::make('Translations')
+    ->icon('heroicon-o-language')
+    ->schema([
+        Tabs::make('Languages')
+            ->tabs([
+                Tab::make('English')
+                    ->schema([
+                        TextInput::make('translations.en.name')
+                            ->label('Name'),
+
+                        RichEditor::make('translations.en.description')
+                            ->label('Description'),
+                    ]),
+
+                Tab::make('Azərbaycan')
+                    ->schema([
+                        TextInput::make('translations.az.name')
+                            ->label('Ad'),
+
+                        RichEditor::make('translations.az.description')
+                            ->label('Açıqlama'),
+                    ]),
+
+                Tab::make('ქართული')
+                    ->schema([
+                        TextInput::make('translations.ka.name')
+                            ->label('სახელი'),
+
+                        RichEditor::make('translations.ka.description')
+                            ->label('აღწერა'),
+                    ]),
+            ])
+            ->columnSpanFull(),
+    ]),
+                            ])
+
+
+                            ->persistTabInQueryString(),
+
             ]);
     }
 }

@@ -19,22 +19,27 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+            $locale = $request->header('Accept-Language', 'en');
+
+            $translation = $this->resource->translations
+            ->firstWhere('locale', $locale);
         return [
             'id' => $this->resource->id,
             'brand' => $this->resource->brand?->name,
-            'name' => $this->resource->name,
+            'name' => $translation?->name ?? $this->resource->name,
             'slug' => $this->resource->slug,
             'thumbnail' => $this->resource->thumbnail,
             'price' => $this->resource->price,
-            'description' => $this->resource->description,
+            'description' => $translation?->description ?? $this->resource->description,
             'attributes' => $this->resource->attributes,
-            'variants' => $this->whenLoaded('variants', fn() => $this->resource->variants->map(
+            
+            'variants' => $this->whenLoaded('variants', fn () => $this->resource->variants->map(
                 function ($variant) {
                     return [
                         'id' => $variant->id,
                         'price' => $variant->price,
                         'stock' => $variant->stock,
-                        'attributeValues' => $variant->attributeValues->map(fn($atv) => [
+                        'attributeValues' => $variant->attributeValues->map(fn ($atv) => [
                             'id' => $atv->id,
                             'attribute' => $atv->attribute->name,
                             'value' => $atv->value

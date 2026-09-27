@@ -1,5 +1,6 @@
 import axios from "axios"
 
+
 export const backendUrl= "http://localhost:8000"
 
 export const api = axios.create({
@@ -14,4 +15,10 @@ export const backendApi  = axios.create({
   withXSRFToken: true,
 })
 
+api.interceptors.request.use((config) => {
+  const locale = window.localStorage.getItem('locale') ?? 'en'
 
+  config.headers['Accept-Language'] = locale
+
+  return config
+})
