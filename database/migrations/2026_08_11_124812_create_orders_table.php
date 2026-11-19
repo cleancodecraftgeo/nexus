@@ -7,20 +7,20 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up(): void
-{
-    Schema::create('orders', function (Blueprint $table) {
-        $table->ulid('id')->primary();
+    {
+        Schema::create('orders', function (Blueprint $table) {
+            $table->ulid('id')->primary();
 
-        $table->decimal('total', 12, 2);
+            $table->decimal('total', 12, 2);
 
-        $table->string('status')->default('pending');
+            $table->string('status')->default('pending');
 
-        $table->timestamps();
-    });
-}
+            $table->timestamps();
+        });
+    }
 
     public function down(): void
     {
-        Schema::dropIfExists('order_items');
+        Schema::dropIfExists('orders');
     }
 };

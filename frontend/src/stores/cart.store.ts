@@ -1,8 +1,9 @@
 
 
 
-import type { Product, ProductVariant } from "../types/Product";
 import { defineStore } from "pinia";
+import type { Product, ProductVariant } from "../types/Product";
+import { ProductService } from '@/services/product.service'
 
 
 interface CartItem {
@@ -53,6 +54,39 @@ export const useCartStore = defineStore("cart",
     }
 
 
+        },
+
+        async refreshPrices(): Promise<void> {
+
+          if(this.items.length === 0) {return}
+
+          const productSlugs = [
+            ...new Set(
+              this.items.map((item)=> item.product.slug)
+            ),
+          ]
+          const responses = await Promise.all(
+            productSlugs.map((slug) =>
+            ProductService.getProduct(slug))
+          )
+        const freshProducts = responses.map(
+    (response) => response.data)
+            this.items.forEach((item) => {
+              const freshProduct = freshProducts.find(
+                (product) => product.id === item.product.id
+              )
+
+              if(!freshProduct) {
+                return
+              }
+          const freshVariant = freshProduct.variants.find((variant: { id: string; }) => variant.id === item.variant.id)
+
+                if (!freshVariant) {
+                      return}
+
+                      item.product = freshProduct
+                      item.variant = freshVariant
+            })
         },
 
 

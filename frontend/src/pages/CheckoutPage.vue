@@ -4,15 +4,19 @@ import { useOrderStore } from "@/stores/order.store";
 import { createOrder } from "@/services/order.service";
 import { storageUrl } from "@/utils/images";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import axios from "axios";
 import { useNotify } from "@/composables/useNotify";
+import { useI18n } from 'vue-i18n'
+
+// import { M } from "vue-router/dist/index-BN0B0y8a.js";
 const cartStore = useCartStore();
 const orderStore = useOrderStore();
 const notify = useNotify();
 const orderError = ref<string | null>(null);
 const loading = ref(false);
 const router = useRouter();
+const {t} = useI18n();
 
 const placeOrder = async () => {
     loading.value = true;
@@ -20,6 +24,8 @@ const placeOrder = async () => {
 
     try {
         const payload = {
+            ...form,
+
             items: cartStore.items.map((item) => ({
                 product_id: item.product.id,
                 variant_id: item.variant.id,
@@ -52,19 +58,23 @@ const placeOrder = async () => {
         console.log(data);
 
         if (data?.code === "INSUFFICIENT_STOCK") {
-            const message = `Only ${data.details.available} item(s) are available in stock.`;
-            orderError.value = message;
-            notify.warning(message);
-            return;
-        }
-        if (data?.code === "OUT_OF_STOCK") {
-    const message = "This product is currently out of stock.";
+           const message = data?.message ?? "Insufficient stock."
 
-    orderError.value = message;
-    notify.error(message);
+            orderError.value = message
+            notify.warning(message)
 
-    return;
-}
+            return
+          }
+
+          if (data?.code === "OUT_OF_STOCK") {
+              const message = data?.message ?? "This product is currently out of stock."
+
+              orderError.value = message
+              notify.error(message)
+
+              return
+      }
+
 
         const message = data?.message ?? "Order could not be created.";
         orderError.value = message;
@@ -82,6 +92,17 @@ const placeOrder = async () => {
 }
 }
 
+const form = reactive({
+  first_name: '',
+  last_name: '',
+  phone: '',
+  email: '',
+  city: '',
+  address: '',
+  postal_code: '',
+  notes: '',
+})
+
 </script>
 
 <template>
@@ -93,11 +114,11 @@ const placeOrder = async () => {
       <!-- Header -->
       <div class="mb-10">
         <RouterLink to="/cart" class="text-sm text-slate-500 transition hover:text-slate-900">
-          ← Back to cart
+          ← {{ t('checkout.backToCart') }}
         </RouterLink>
 
         <h1 class="mt-4 text-3xl font-bold text-slate-900">
-          Checkout
+          {{ t('checkout.checkout') }}
         </h1>
       </div>
 
@@ -110,15 +131,15 @@ const placeOrder = async () => {
           <!-- Contact -->
           <section class="rounded-2xl border border-slate-200 bg-white p-6">
             <h2 class="text-xl font-semibold text-slate-900">
-              Contact information
+              {{t('checkout.contactInformation')}}
             </h2>
 
             <div class="mt-5">
               <label for="email" class="mb-2 block text-sm font-medium text-slate-700">
-                Email
+                {{t('checkout.email')}}
               </label>
 
-              <input id="email" type="email" placeholder="you@example.com"
+              <input id="email" type="email" v-model="form.email" placeholder="you@example.com"
                 class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
             </div>
           </section>
@@ -126,54 +147,85 @@ const placeOrder = async () => {
           <!-- Shipping -->
           <section class="rounded-2xl border border-slate-200 bg-white p-6">
             <h2 class="text-xl font-semibold text-slate-900">
-              Shipping information
+              {{ t('checkout.shippingInformation') }}
             </h2>
 
             <div class="mt-5 grid gap-5 sm:grid-cols-2">
 
               <div class="sm:col-span-2">
-                <label aria-label="Full name" class="mb-2 block text-sm font-medium text-slate-700">
-                  Full name
+                <label for="Name" aria-label="Full name" class="mb-2 block text-sm font-medium text-slate-700">
+                  {{ t('profile.name') }}
                 </label>
 
-                <input type="text" placeholder="John Doe"
+                <input id="Name" type="text" v-model="form.first_name" :placeholder="t('profile.name')"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
+
+                <label for="LastName" aria-label="Full name" class="mb-2 block text-sm font-medium text-slate-700">
+                  {{ t('profile.surname') }}
+                </label>
+
+                <input id="LastName" type="text" v-model="form.last_name" :placeholder="t('profile.surname')"
                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
               </div>
 
-              <div>
-                <label class="mb-2 block text-sm font-medium text-slate-700">
-                  City
+              <div class="">
+                <label for="cityInput" class="mb-2 block text-sm font-medium text-slate-700">
+                  {{ t('checkout.city') }}
                 </label>
 
-                <input type="text" placeholder="Tbilisi"
+                <input id="cityInput" type="text" v-model="form.city" placeholder="Tbilisi"
                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
+
+
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-medium text-slate-700">
-                  Country
+                <label for="phoneInput" class="mb-2 block text-sm font-medium text-slate-700">
+                  {{ t('checkout.phone') }}
                 </label>
 
-                <input type="text" placeholder="Georgia"
+                <input id="phoneInput" v-model="form.phone" inputmode="numeric" placeholder="598 12 13 14"
                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
               </div>
 
               <div class="sm:col-span-2">
-                <label class="mb-2 block text-sm font-medium text-slate-700">
-                  Address
+                <label for="postalCodeInput" class="mb-2 block text-sm font-medium text-slate-700">
+                  {{ t('checkout.postalCode') }}
                 </label>
 
-                <input type="text" placeholder="Street and house number"
+                <input id="postalCodeInput" type="text" v-model="form.postal_code" placeholder="11111"
                   class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
               </div>
 
+
+
+
+              <div class="sm:col-span-2">
+                <label for="addressInput" class="mb-2 block text-sm font-medium text-slate-700">
+                  {{ t('checkout.address') }}
+                </label>
+
+                <input id="addressInput" v-model="form.address" type="text"
+                  :placeholder="t('checkout.addressPlaceholder')"
+                  class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
+
+              </div>
+
+            </div>
+            <div>
+              <label for="notesInput" class="mb-2 block text-sm font-medium text-slate-700">
+                {{ t('checkout.notes') }}
+              </label>
+
+              <textarea id="notesInput" rows="4" v-model="form.notes" :placeholder="t('checkout.notesPlaceholder')"
+                class="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900" />
             </div>
           </section>
 
           <!-- Payment -->
           <section class="rounded-2xl border border-slate-200 bg-white p-6">
             <h2 class="text-xl font-semibold text-slate-900">
-              Payment
+              {{ t('checkout.payment') }}
             </h2>
 
             <div class="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4">
@@ -184,7 +236,10 @@ const placeOrder = async () => {
               <p class="mt-1 text-sm text-slate-500">
                 Payment integration will be added soon.
               </p>
+
+
             </div>
+
           </section>
 
         </div>
@@ -192,7 +247,7 @@ const placeOrder = async () => {
         <!-- RIGHT SIDE -->
         <aside class="h-fit rounded-2xl border border-slate-200 bg-white p-6 lg:sticky lg:top-6">
           <h2 class="text-xl font-semibold text-slate-900">
-            Your Order
+            {{ t('checkout.yourOrder') }}
           </h2>
 
           <!-- Products -->
@@ -230,19 +285,19 @@ const placeOrder = async () => {
           <div class="mt-6 border-t border-slate-200 pt-6">
 
             <div class="flex justify-between text-sm text-slate-600">
-              <span>Items</span>
+              <span>{{ t('checkout.items') }}</span>
               <span>{{ cartStore.cartCount }}</span>
             </div>
 
             <div class="mt-3 flex justify-between text-sm text-slate-600">
-              <span>Subtotal</span>
+              <span>{{ t('checkout.subtotal') }}</span>
               <span>
                 ${{ cartStore.cartTotal }}
               </span>
             </div>
 
             <div class="mt-4 flex justify-between border-t border-slate-200 pt-4 text-lg font-bold text-slate-900">
-              <span>Total</span>
+              <span>{{ t('checkout.total') }}</span>
 
               <span>
                 ${{ cartStore.cartTotal }}

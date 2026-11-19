@@ -1,5 +1,5 @@
 import { ProductService } from "@/services/product.service";
-import type { Product } from "@/types/product";
+import type { Product } from "@/types/Product";
 import { defineStore } from "pinia";
 
 

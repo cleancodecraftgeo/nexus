@@ -6,46 +6,51 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use App\Exceptions\OutOfStockException;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Auth\AuthenticationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-         api: __DIR__.'/../routes/api.php',
-        commands: __DIR__.'/../routes/console.php',
+        web: __DIR__ . '/../routes/web.php',
+        api: __DIR__ . '/../routes/api.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-          $middleware->redirectGuestsTo(function (Request $request) {
-        if ($request->is('api/*')) {
-            return null;
-        }
+        $middleware->redirectGuestsTo(function (Request $request) {
+            if ($request->is('api/*')) {
+                return null;
+            }
 
-        return route('login');
-    });
-    $middleware->statefulApi();
+            return route('login');
+        });
+        $middleware->statefulApi();
+
+        $middleware->alias([
+            'locale' => SetLocale::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(
-            function (InsufficientStockException $e){
+            function (InsufficientStockException $e) {
                 return response()->json([
-                    'success'=>false,
+                    'success' => false,
                     'code' => 'INSUFFICIENT_STOCK',
-                    'message'=>$e->getMessage(),
-                    'details'=>[
-                        'requested'=>$e->requested,
-                        'available'=>$e->available,
+                    'message' => $e->getMessage(),
+                    'details' => [
+                        'requested' => $e->requested,
+                        'available' => $e->available,
                     ]
-                ],409);
+                ], 409);
             }
         );
-        $exceptions->render(function(OutOfStockException $e) {
+        $exceptions->render(function (OutOfStockException $e) {
             return response()->json([
-                'success'=>false,
-                'code'=>'OUT_OF_STOCK',
-                'message'=>$e->getMessage(),
-                'details'=>null,
-            ],409);
+                'success' => false,
+                'code' => 'OUT_OF_STOCK',
+                'message' => $e->getMessage(),
+                'details' => null,
+            ], 409);
         });
 
         $exceptions->render(function (AuthenticationException $e, Request $request) {
@@ -56,4 +61,3 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
     })->create();
-

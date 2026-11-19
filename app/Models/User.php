@@ -27,33 +27,33 @@ class User extends Authenticatable implements FilamentUser
         'remember_token',
     ];
 
-    public function isSuperAdmin():bool
+    public function isSuperAdmin(): bool
     {
         return $this->role === UserRole::SuperAdmin;
     }
 
-        public function isAdmin():bool
+    public function isAdmin(): bool
     {
         return $this->role === UserRole::Admin;
     }
 
-    public function isManager():bool
+    public function isManager(): bool
     {
-        return $this->role ===UserRole::Manager;
+        return $this->role === UserRole::Manager;
     }
 
-        public function isCustomer():bool
+    public function isCustomer(): bool
     {
         return $this->role === UserRole::Customer;
     }
 
     public function canAccessAdminPanel(): bool
     {
-        return in_array($this->role,[
+        return in_array($this->role, [
             UserRole::SuperAdmin,
             UserRole::Admin,
             UserRole::Manager
-        ],true);
+        ], true);
     }
 
 
@@ -62,16 +62,17 @@ class User extends Authenticatable implements FilamentUser
         return $this->canAccessAdminPanel();
     }
 
+    #[Override]
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'role'=>UserRole::class
+            'role' => UserRole::class
         ];
     }
 
-    public function orders():HasMany
+    public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
     }

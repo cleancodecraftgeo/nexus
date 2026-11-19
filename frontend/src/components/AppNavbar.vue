@@ -2,16 +2,18 @@
 import { useCartStore } from '@/stores/cart.store';
 import { RouterLink,   useRouter } from 'vue-router';
 import {Heart, Menu,  ShoppingCart, User} from "lucide-vue-next"
-import { ref,computed } from 'vue';
+import { ref,computed, watch } from 'vue';
 import MobileMenu from './Navbar/MobileMenu.vue';
 import { useAuthStore } from '@/stores/auth.store';
 import { useI18n } from 'vue-i18n';
+import { useCurrencyStore, type Currency } from '@/stores/currency.store.ts';
 
 const {t,locale} = useI18n()
 const cartStore = useCartStore();
 const isMenuOpen = ref<boolean>(false);
 const authStore = useAuthStore()
 const router = useRouter()
+const currencyStore = useCurrencyStore();
 
 const navbarLinks = computed(()=> [
   {label: t('nav.home'), path: '/'},
@@ -50,6 +52,13 @@ function changeLocale(event: Event) {
   locale.value = value
   localStorage.setItem('locale', value)
 }
+
+watch(
+  () => currencyStore.currency,
+  (newValue, oldValue) => {
+    console.log(`watch: ${oldValue} -> ${newValue}`)
+  }
+)
 </script>
 
 <template>
@@ -86,9 +95,23 @@ function changeLocale(event: Event) {
           <option value="ru">RU</option>
           <option value="ka">KA</option>
         </select>
+
+        <!-- //currency -->
+        <div class="flex flex-col">
+          <label for="currency-select">Valyuta</label>
+          <select id="currency-select" :value="currencyStore.currency"
+            @change="currencyStore.setCurrency(($event.target as HTMLSelectElement).value as Currency)">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GEL">GEL</option>
+          </select>
+        </div>
+
         <RouterLink to="/cart">
           <Heart :size="20" class="cursor-pointer text-slate-300 transition hover:text-white" />
         </RouterLink>
+
+
 
         <RouterLink to="/cart" class="relative">
           <ShoppingCart :size="20" class="cursor-pointer text-slate-300 transition hover:text-white" />
@@ -99,7 +122,7 @@ function changeLocale(event: Event) {
         </RouterLink>
 
 
-        <RouterLink to="/">
+        <RouterLink to="/profile">
           <User :size="20" class="cursor-pointer text-slate-300 transition hover:text-white" />
         </RouterLink>
 
@@ -112,6 +135,7 @@ function changeLocale(event: Event) {
             <RouterLink to="/register" class="hover:opacity-70">
               {{ t('nav.register') }}
             </RouterLink>
+
 
           </template>
 

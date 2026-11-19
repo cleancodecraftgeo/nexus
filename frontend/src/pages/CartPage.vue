@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useCartStore } from "@/stores/cart.store";
-
 import { storageUrl } from "@/utils/images";
 import { RouterLink } from "vue-router";
+import { formatCurrency } from '@/utils/currency'
+import { useCurrencyStore } from "@/stores/currency.store";
 
+const currencyStore = useCurrencyStore()
 const cartStore = useCartStore();
+
 </script>
 
 <template>
@@ -49,7 +52,7 @@ const cartStore = useCartStore();
               </RouterLink>
 
               <p class="mt-1 text-center sm:text-start text-slate-500">
-                ${{ item.variant.price }}
+                {{formatCurrency(cartStore.cartTotal, currencyStore.currency)}}
               </p>
             </div>
 
@@ -58,15 +61,11 @@ const cartStore = useCartStore();
               <p class="text-sm text-center sm:text-start font-semibold text-slate-900 transition hover:text-slate-600">
                 Total Price {{ Number(item.variant.price) * item.quantity }}
               </p>
-<div class="text-sm text-slate-500">
-  <span
-    v-for="value in item.variant.attributeValues"
-    :key="value.id"
-    class="flex"
-  >
-    {{ value.attribute }}: {{ value.value }}
-  </span>
-</div>
+              <div class="text-sm text-slate-500">
+                <span v-for="value in item.variant.attributeValues" :key="value.id" class="flex">
+                  {{ value.attribute }}: {{ value.value }}
+                </span>
+              </div>
             </div>
 
 
@@ -119,10 +118,8 @@ const cartStore = useCartStore();
               <span>${{ cartStore.cartTotal }}</span>
             </div>
 
-            <RouterLink
-              :to="cartStore.items.length > 0 ? '/checkout' : '#'"
-              @click.prevent="cartStore.items.length === 0 && $event.preventDefault()"
-              :class="[
+            <RouterLink :to="cartStore.items.length > 0 ? '/checkout' : '#'"
+              @click.prevent="cartStore.items.length === 0 && $event.preventDefault()" :class="[
                 'mt-6 block w-full rounded-xl px-5 py-3 text-center text-sm font-semibold transition',
                 cartStore.items.length === 0
                   ? 'bg-slate-300 text-slate-500 cursor-not-allowed pointer-events-none'

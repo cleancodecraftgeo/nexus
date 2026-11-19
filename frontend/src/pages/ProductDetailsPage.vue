@@ -7,6 +7,8 @@ import { useCartStore } from '@/stores/cart.store';
 import {   computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { api } from '@/services/api'
+import { formatCurrency } from '@/utils/currency'
+import { useCurrencyStore } from '@/stores/currency.store'
 
 async function testOrder() {
   try {
@@ -25,9 +27,9 @@ interface SelectedValues {
 
 
 const selectedValues = ref<SelectedValues>({});
-
 const route = useRoute();
 const cartStore = useCartStore();
+const currencyStore = useCurrencyStore()
 
 const product = ref<Product|null>(null);
 const loading = ref(true);
@@ -131,9 +133,11 @@ onMounted(async () => {
 //   JSON.stringify(product.value?.variants, null, 2)
 // );
 
-console.log(product);
+
   }
 });
+
+
 
 
 // watch(selectedVariant, (value) => {
@@ -157,7 +161,8 @@ console.log(product);
         <h1 class="text-2xl md:text-3xl font-bold text-slate-900 ">{{product?.brand}}</h1>
         <h2 class="text-2xl md:text-3xl font-bold text-slate-900 ">{{product?.name}}</h2>
         <p class="text-2xl md:text-3xl font-bold text-slate-900 mt-2">
-          $ {{ selectedVariant?.price ?? product?.price }}
+
+          {{ formatCurrency(Number(selectedVariant?.price ?? product?.price),currencyStore.currency)}}
         </p>
         <p v-if="selectedVariant">
           Stock: {{ selectedVariant.stock }}
@@ -165,17 +170,13 @@ console.log(product);
         <p v-if="product?.description" v-html="product.description"></p>
 
         <div v-for="attribute in product?.attributes ?? []" :key="attribute.id" class="md:mt-3 p-1">
-  <p>{{ attribute.name }}</p>
+          <p>{{ attribute.name }}</p>
 
-  <div class="flex flex-wrap gap-2">
-    <button
-      type="button"
-      v-for="value in attribute.values"
-      :key="value.id"
-      :style="attribute.name === 'Color' ? { '--btn-bg': value.value } : {}"
-      :disabled="!isValueAvailable(attribute.name, value.value)"
-      @click="attributeSet(attribute.name, value.value)"
-      :class="[
+          <div class="flex flex-wrap gap-2">
+            <button type="button" v-for="value in attribute.values" :key="value.id"
+              :style="attribute.name === 'Color' ? { '--btn-bg': value.value } : {}"
+              :disabled="!isValueAvailable(attribute.name, value.value)"
+              @click="attributeSet(attribute.name, value.value)" :class="[
         attribute.name === 'Color'
           ? 'color-swatch'
           : (checkAttribute(attribute.name, value.value) ? 'bg-gray-950' : 'bg-gray-500'),
@@ -183,34 +184,29 @@ console.log(product);
         !isValueAvailable(attribute.name, value.value)
           ? 'cursor-not-allowed opacity-50 text-gray-300'
           : 'cursor-pointer'
-      ]"
-      class="px-2 py-1 text-slate-200 font-medium
+      ]" class="px-2 py-1 text-slate-200 font-medium
         hover:bg-amber-600 hover:text-shadow-white hover:text-white rounded-xs shadow-lg shadow-black/50
-        transition duration-150"
-    >
-      {{ attribute.name === 'Color' ? '' : value.value }}
-    </button>
-  </div>
-</div>
+        transition duration-150">
+              {{ attribute.name === 'Color' ? '' : value.value }}
+            </button>
+          </div>
+        </div>
 
       </div>
     </div>
 
     <div>
       <!-- test ucun olan div elementi -->
-      <button type="button" @click="addToCart" class="border border-red-400 hover:bg-red-700 rounded-2xl shadow-gray-800 bg-amber-700 text-white font-semibold px-4 py-3">
+      <button type="button" @click="addToCart"
+        class="border border-red-400 hover:bg-red-700 rounded-2xl shadow-gray-800 bg-amber-700 text-white font-semibold px-4 py-3">
         Add to Cart
       </button>
     </div>
 
     <!-- recomended products -->
-    <div><button
-  type="button"
-  @click="testOrder"
-  class="border px-4 py-2"
->
-  Test Order Policy
-</button></div>
+    <div><button type="button" @click="testOrder" class="border px-4 py-2">
+        Test Order Policy
+      </button></div>
   </div>
 </template>
 <style scoped>

@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Enums\UserRole;
 use App\Models\Order;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class OrderPolicy
 {
@@ -14,11 +13,11 @@ class OrderPolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role,[
+        return in_array($user->role, [
             UserRole::SuperAdmin,
             UserRole::Admin,
             UserRole::Manager,
-        ],true);
+        ], true);
     }
 
     /**
@@ -26,14 +25,14 @@ class OrderPolicy
      */
     public function view(User $user, Order $order): bool
     {
-        if(in_array($user->role,[
+        if (in_array($user->role, [
             UserRole::Manager,
             UserRole::Admin,
             UserRole::SuperAdmin,
-        ], true)){
+        ], true)) {
             return true;
         }
-    return $order->user_id ===$user->id;
+        return $order->user_id === $user->id;
     }
 
     /**
@@ -49,11 +48,11 @@ class OrderPolicy
      */
     public function update(User $user, Order $order): bool
     {
-        return in_array($user->role,[
+        return in_array($user->role, [
             UserRole::SuperAdmin,
             UserRole::Admin,
             UserRole::Manager,
-        ],true);
+        ], true);
     }
 
     /**
@@ -61,10 +60,10 @@ class OrderPolicy
      */
     public function delete(User $user, Order $order): bool
     {
-        return in_array($user->role,[
+        return in_array($user->role, [
             UserRole::SuperAdmin,
             UserRole::Admin
-        ],true);
+        ], true);
     }
 
     /**

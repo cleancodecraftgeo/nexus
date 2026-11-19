@@ -36,9 +36,7 @@ function formatDate(date: string) {
 
 
 
-onMounted(()=>{
-  fetchOrders()
-})
+onMounted(fetchOrders)
 </script>
 
 <template>
@@ -51,29 +49,16 @@ onMounted(()=>{
       Loading orders...
     </p>
 
-    <p
-      v-else-if="error"
-      class="text-red-500"
-    >
+    <p v-else-if="error" class="text-red-500">
       {{ error }}
     </p>
 
-    <p
-      v-else-if="orders.length === 0"
-      class="text-gray-500"
-    >
+    <p v-else-if="orders.length === 0" class="text-gray-500">
       You don't have any orders yet.
     </p>
 
-    <div
-      v-else
-      class="space-y-6 "
-    >
-      <div
-        v-for="order in orders"
-        :key="order.id"
-        class="border rounded-xl p-5"
-      >
+    <div v-else class="space-y-6 ">
+      <div v-for="order in orders" :key="order.id" class="border rounded-xl p-5">
         <div class="flex justify-between items-start mb-4">
           <div>
             <p class="text-sm text-gray-500">
@@ -86,76 +71,61 @@ onMounted(()=>{
 
             <p class="text-sm text-gray-500 mt-1">
               {{ formatDate(order.created_at) }}
-             </p>
+            </p>
           </div>
 
-          <span
-          :class="[
+          <span :class="[
             'text-sm font-medium px-3 py-1 rounded-full capitalize', statusClass(order.status)
-          ]"
-          >
+          ]">
             {{ order.status }}
           </span>
         </div>
 
-        <div
-  v-for="item in order.items"
-  :key="item.id"
-  class="border-t py-4 flex gap-4"
->
-  <img
-    v-if="item.product.thumbnail"
-    :src="`${backendUrl}/storage/${item.product.thumbnail}`"
-    :alt="item.product.name"
-    class="w-20 h-20 object-cover rounded-lg"
-  />
+        <div v-for="item in order.items" :key="item.id" class="border-t py-4 flex gap-4">
+          <img v-if="item.product.thumbnail" :src="`${backendUrl}/storage/${item.product.thumbnail}`"
+            :alt="item.product.name" class="w-20 h-20 object-cover rounded-lg" />
 
-  <div>
-    <h2 class="font-medium">
-      {{ item.product.name }}
-    </h2>
+          <div>
+            <h2 class="font-medium">
+              {{ item.product.name }}
+            </h2>
 
-    <p>
-      Quantity: {{ item.quantity }}
-    </p>
+            <p>
+              Quantity: {{ item.quantity }}
+            </p>
 
-    <p>
-      Price: {{ item.price }}
-    </p>
+            <p>
+              Price: {{ item.price }}
+            </p>
 
-    <div class="mt-2">
-      <span
-        v-for="attributeValue in item.variant.attribute_values"
-        :key="attributeValue.id"
-        class="mr-4 text-sm text-gray-600"
-      >
-        {{ attributeValue.attribute.name }}:
-        {{ attributeValue.value }}
-      </span>
-    </div>
-  </div>
-</div>
+            <div class="mt-2" v-if="item.variant">
+              <span v-for="attributeValue in item.variant.attribute_values" :key="attributeValue.id"
+                class="mr-4 text-sm text-gray-600">
+                {{ attributeValue.attribute.name }}:
+                {{ attributeValue.value }}
+              </span>
+            </div>
+          </div>
+        </div>
 
         <div class="border-t pt-4 flex justify-between">
-          <RouterLink :to="`/orders/${order.id}`"
-        class="text-sm font-medium underline"
-        >
+          <RouterLink :to="`/orders/${order.id}`" class="text-sm font-medium underline">
             View details
-        </RouterLink>
-        
+          </RouterLink>
+
           <div>
             <span class="text-gray-500 mr-2">
-            Total:
-          </span>
+              Total:
+            </span>
 
-          <span class="font-semibold">
-            {{ order.total }}
-          </span>
+            <span class="font-semibold">
+              {{ order.total }}
+            </span>
           </div>
         </div>
         <div>
 
-</div>
+        </div>
       </div>
 
     </div>

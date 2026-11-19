@@ -17,8 +17,9 @@ export const backendApi  = axios.create({
 
 api.interceptors.request.use((config) => {
   const locale = window.localStorage.getItem('locale') ?? 'en'
+  const currency = localStorage.getItem('currency') ?? 'USD'
 
   config.headers['Accept-Language'] = locale
-
+  config.headers['Accept-Currency'] = currency
   return config
 })

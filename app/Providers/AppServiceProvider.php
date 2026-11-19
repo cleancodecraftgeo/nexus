@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\ExchangeRateProviderInterface;
 use App\Contracts\InventoryServiceInterface;
 use App\Models\Product;
 use App\Observers\ProductObserver;
@@ -11,6 +12,7 @@ use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Order\OrderRepository;
 use App\Repositories\Product\ProductRepository;
 use App\Services\CounterService;
+use App\Services\ExchangeRateProvider;
 use App\Services\InventoryService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
@@ -30,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             OrderRepositoryInterface::class,
             OrderRepository::class
+        );
+        $this->app->bind(
+            ExchangeRateProviderInterface::class,
+            ExchangeRateProvider::class
         );
     }
 

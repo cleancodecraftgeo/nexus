@@ -3,6 +3,7 @@ export interface Product {
   id: string
   name: string;
   price: string;
+  currency: string;
   slug:string;
   thumbnail:string;
   brand:string | null;
